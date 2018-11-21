@@ -4,3 +4,5 @@ version = "0.1.0"
 authors = ["Chris Bruce"]
 
 [dependencies]
+dotenv = "0.13.0"
+slack = "0.22.0"
