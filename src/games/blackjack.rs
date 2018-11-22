@@ -30,6 +30,12 @@ impl Card {
     }
 }
 
+impl ToString for Card {
+    fn to_string(&self) -> String {
+        format!("{} of {:?}", self.name, self.suit)
+    }
+}
+
 #[derive(Debug)]
 pub struct Deck {
     cards: Vec<Card>,
@@ -81,5 +87,9 @@ impl Deck {
     pub fn shuffle(&mut self) {
         let mut rng = thread_rng();
         self.cards.shuffle(&mut rng);
+    }
+
+    pub fn deal_card(&mut self) -> Option<Card> {
+        self.cards.pop()
     }
 }

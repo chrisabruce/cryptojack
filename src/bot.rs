@@ -1,25 +1,47 @@
 use regex::Regex;
 use slack::{self, Event, RtmClient};
 
+use games::blackjack;
+
 pub struct CryptoJackBot {
     pub name: String,
+    pub deck: blackjack::Deck,
 }
 
 impl CryptoJackBot {
     pub fn new(name: &String) -> CryptoJackBot {
-        CryptoJackBot { name: name.clone() }
+        let mut d = blackjack::Deck::new();
+        d.shuffle();
+        print!("You got the {:?}", d);
+
+        CryptoJackBot {
+            name: name.clone(),
+            deck: d,
+        }
     }
 
-    fn on_message(&self, client: &RtmClient, message: slack::Message) {
+    fn on_message(&mut self, client: &RtmClient, message: slack::Message) {
         match message {
             slack::Message::Standard(message) => {
                 print!("message");
-                if let Some(output) = has_bot_mention(&self, &message.text) {
-                    let channel_id = message.channel.unwrap();
-                    let _ = client.sender().send_message(&channel_id, &output);
+                if let Some(command) = has_command(&message.text) {
+                    if let Some(output) = self.eval_command(command) {
+                        let channel_id = message.channel.unwrap();
+                        let _ = client.sender().send_message(&channel_id, &output);
+                    } else if let Some(output) = has_bot_mention(&self, &message.text) {
+                        let channel_id = message.channel.unwrap();
+                        let _ = client.sender().send_message(&channel_id, &output);
+                    }
                 };
             }
             _ => println!("other"),
+        }
+    }
+
+    fn eval_command(&mut self, command: String) -> Option<String> {
+        match command.to_lowercase().as_str() {
+            "deal" => Some(self.deck.deal_card().unwrap().to_string()),
+            _ => None,
         }
     }
 }
@@ -39,6 +61,19 @@ impl slack::EventHandler for CryptoJackBot {
 
     fn on_connect(&mut self, client: &RtmClient) {
         println!("on_connect");
+    }
+}
+
+fn has_command(message: &Option<String>) -> Option<String> {
+    match message {
+        &Some(ref text) => {
+            let re = Regex::new(r"/help (?P<command>.*?)$").unwrap();
+            match re.captures(&text) {
+                Some(capture) => Some(String::from(&capture["command"])),
+                _ => None,
+            }
+        }
+        _ => None,
     }
 }
 
