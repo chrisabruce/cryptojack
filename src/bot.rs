@@ -7,9 +7,7 @@ pub struct CryptoJackBot {
 
 impl CryptoJackBot {
     pub fn new(name: &String) -> CryptoJackBot {
-        CryptoJackBot {
-            name: name.clone(),
-        }
+        CryptoJackBot { name: name.clone() }
     }
 
     fn on_message(&self, client: &RtmClient, message: slack::Message) {
@@ -23,7 +21,7 @@ impl CryptoJackBot {
             }
             _ => println!("other"),
         }
-}
+    }
 }
 
 impl slack::EventHandler for CryptoJackBot {
