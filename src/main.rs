@@ -16,7 +16,8 @@ fn main() {
     let api_key = std::env::var("SLACK_API_TOKEN").expect("SLACK_API_TOKEN was not found.");
     let bot_name = std::env::var("SLACK_BOT_NAME").expect("SLACK_BOT_NAME was not found.");
 
-    let d = blackjack::Deck::new();
+    let mut d = blackjack::Deck::new();
+    d.shuffle();
     print!("You got the {:?}", d);
 
     let mut bot = bot::CryptoJackBot::new(&bot_name);

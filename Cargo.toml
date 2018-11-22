@@ -5,5 +5,6 @@ authors = ["Chris Bruce"]
 
 [dependencies]
 dotenv = "0.13.0"
+rand = "0.6.0"
 regex = "1"
 slack = "0.22.0"

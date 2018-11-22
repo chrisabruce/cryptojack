@@ -1,3 +1,8 @@
+extern crate rand;
+
+use self::rand::seq::SliceRandom;
+use self::rand::thread_rng;
+
 #[derive(Debug, Clone, Copy)]
 pub enum Suit {
     Hearts,
@@ -47,13 +52,7 @@ impl Deck {
             }
             deck.cards.push(Card {
                 suit: suit,
-                name: String::from("Ace"),
-                value: 11,
-                alt_value: 1,
-            });
-            deck.cards.push(Card {
-                suit: suit,
-                name: String::from("King"),
+                name: String::from("Jack"),
                 value: 10,
                 alt_value: 10,
             });
@@ -65,11 +64,22 @@ impl Deck {
             });
             deck.cards.push(Card {
                 suit: suit,
-                name: String::from("Jack"),
+                name: String::from("King"),
                 value: 10,
                 alt_value: 10,
             });
+            deck.cards.push(Card {
+                suit: suit,
+                name: String::from("Ace"),
+                value: 11,
+                alt_value: 1,
+            });
         }
         deck
+    }
+
+    pub fn shuffle(&mut self) {
+        let mut rng = thread_rng();
+        self.cards.shuffle(&mut rng);
     }
 }
