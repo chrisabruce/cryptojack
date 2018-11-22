@@ -10,7 +10,7 @@ pub struct CryptoJackBot {
 
 impl CryptoJackBot {
     pub fn new(name: &String) -> CryptoJackBot {
-        let mut d = blackjack::Deck::new();
+        let mut d = blackjack::Deck::new(1);
         d.shuffle();
         print!("You got the {:?}", d);
 
@@ -55,11 +55,11 @@ impl slack::EventHandler for CryptoJackBot {
         }
     }
 
-    fn on_close(&mut self, client: &RtmClient) {
+    fn on_close(&mut self, _client: &RtmClient) {
         println!("on_close");
     }
 
-    fn on_connect(&mut self, client: &RtmClient) {
+    fn on_connect(&mut self, _client: &RtmClient) {
         println!("on_connect");
     }
 }

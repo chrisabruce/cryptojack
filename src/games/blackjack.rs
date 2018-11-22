@@ -42,44 +42,26 @@ pub struct Deck {
 }
 
 impl Deck {
-    pub fn new() -> Deck {
+    pub fn new(size: u8) -> Deck {
         let mut deck = Deck { cards: Vec::new() };
 
         let suits = vec![Suit::Hearts, Suit::Diamonds, Suit::Clubs, Suit::Spades];
 
-        for suit in suits {
-            for i in 2..10 {
-                deck.cards.push(Card {
-                    suit: suit,
-                    name: i.to_string(),
-                    value: i,
-                    alt_value: i,
-                });
+        for _x in 0..size {
+            for suit in &suits {
+                for i in 2..10 {
+                    deck.cards
+                        .push(Card::new(suit.clone(), i.to_string(), i, i));
+                }
+                deck.cards
+                    .push(Card::new(suit.clone(), String::from("Jack"), 10, 10));
+                deck.cards
+                    .push(Card::new(suit.clone(), String::from("Queen"), 10, 10));
+                deck.cards
+                    .push(Card::new(suit.clone(), String::from("King"), 10, 10));
+                deck.cards
+                    .push(Card::new(suit.clone(), String::from("Ace"), 11, 2));
             }
-            deck.cards.push(Card {
-                suit: suit,
-                name: String::from("Jack"),
-                value: 10,
-                alt_value: 10,
-            });
-            deck.cards.push(Card {
-                suit: suit,
-                name: String::from("Queen"),
-                value: 10,
-                alt_value: 10,
-            });
-            deck.cards.push(Card {
-                suit: suit,
-                name: String::from("King"),
-                value: 10,
-                alt_value: 10,
-            });
-            deck.cards.push(Card {
-                suit: suit,
-                name: String::from("Ace"),
-                value: 11,
-                alt_value: 1,
-            });
         }
         deck
     }
@@ -92,4 +74,21 @@ impl Deck {
     pub fn deal_card(&mut self) -> Option<Card> {
         self.cards.pop()
     }
+}
+
+mod tests {
+    #[allow(unused_imports)]
+    use super::*;
+
+    #[test]
+    fn test_new_deck_size() {
+        let mut d = Deck::new(2);
+        d.shuffle();
+        assert_eq!(d.cards.len(), 96);
+
+        let mut d = Deck::new(1);
+        d.shuffle();
+        assert_eq!(d.cards.len(), 48);
+    }
+
 }
