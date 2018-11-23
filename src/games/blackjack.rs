@@ -87,7 +87,7 @@ impl Deck {
 }
 
 pub struct Game {
-    pub player_id: String, 
+    pub player_id: String,
     pub wager: u64,
     pub player_cards: Vec<Card>,
     pub dealer_cards: Vec<Card>,
@@ -118,7 +118,11 @@ impl Game {
     }
 
     pub fn hand_in_words(&self) -> String {
-        format!{"Dealer: {}, {}\nPlayer: {}, {}", self.dealer_cards[0], self.dealer_cards[1], self.player_cards[0], self.player_cards[1]}
+        match self.state {
+            GameState::PlayerTurn => format!{"Dealer: Face Down, {}\nPlayer: {}, {}", self.dealer_cards[1], self.player_cards[0], self.player_cards[1]},
+            GameState::DealerTurn => format!{"Dealer: {}, {}\nPlayer: {}, {}", self.dealer_cards[0], self.dealer_cards[1], self.player_cards[0], self.player_cards[1]},
+            _ => format!("unknown"),
+        }
     }
 }
 
