@@ -57,7 +57,7 @@ impl Deck {
 
         for _x in 0..size {
             for suit in &suits {
-                for i in 2..10 {
+                for i in 2..11 {
                     deck.cards
                         .push(Card::new(suit.clone(), i.to_string(), i, i));
                 }
@@ -124,11 +124,11 @@ mod tests {
     fn test_new_deck_size() {
         let mut d = Deck::new(2);
         d.shuffle();
-        assert_eq!(d.cards.len(), 96);
+        assert_eq!(d.cards.len(), 104);
 
         let mut d = Deck::new(1);
         d.shuffle();
-        assert_eq!(d.cards.len(), 48);
+        assert_eq!(d.cards.len(), 52);
     }
 
     #[test]
