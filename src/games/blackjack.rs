@@ -11,6 +11,14 @@ pub enum Suit {
     Spades,
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum GameState {
+    PlayerTurn,
+    DealerTurn,
+    Won,
+    Lost,
+}
+
 #[derive(Debug)]
 pub struct Card {
     pub suit: Suit,
@@ -76,6 +84,38 @@ impl Deck {
     }
 }
 
+pub struct Game {
+    pub player_id: String, 
+    pub wager: u64,
+    pub player_cards: Vec<Card>,
+    pub dealer_cards: Vec<Card>,
+    pub state: GameState,
+    pub deck: Deck,
+}
+
+impl Game {
+    pub fn new(player_id: &String, wager: u64) -> Game {
+        let mut game = Game {
+            player_id: player_id.clone(),
+            wager: wager,
+            player_cards: Vec::new(),
+            dealer_cards: Vec::new(),
+            state: GameState::PlayerTurn,
+            deck: Deck::new(2),
+        };
+        game.deck.shuffle();
+        game.flop();
+        game
+    }
+
+    pub fn flop(&mut self) {
+        self.player_cards.push(self.deck.deal_card().unwrap());
+        self.dealer_cards.push(self.deck.deal_card().unwrap());
+        self.player_cards.push(self.deck.deal_card().unwrap());
+        self.dealer_cards.push(self.deck.deal_card().unwrap());
+    }
+}
+
 mod tests {
     #[allow(unused_imports)]
     use super::*;
@@ -89,6 +129,13 @@ mod tests {
         let mut d = Deck::new(1);
         d.shuffle();
         assert_eq!(d.cards.len(), 48);
+    }
+
+    #[test]
+    fn test_new_game() {
+        let g = Game::new(&String::from("test"), 500);
+        assert_eq!(g.player_cards.len(), 2);
+        assert_eq!(g.dealer_cards.len(), 2);
     }
 
 }
