@@ -5,7 +5,8 @@ use games::blackjack;
 
 pub struct CryptoJackBot {
     pub name: String,
-    pub deck: blackjack::Deck,
+    pub active_games: Vec<blackjack::Game>,
+    pub completed_games: Vec<blackjack::Game>,
 }
 
 impl CryptoJackBot {
@@ -16,7 +17,8 @@ impl CryptoJackBot {
 
         CryptoJackBot {
             name: name.clone(),
-            deck: d,
+            active_games: Vec::new(), //TODO: Persist
+            completed_games: Vec::new(),  //TODO: Persist
         }
     }
 
@@ -40,7 +42,12 @@ impl CryptoJackBot {
 
     fn eval_command(&mut self, command: String) -> Option<String> {
         match command.to_lowercase().as_str() {
-            "deal" => Some(self.deck.deal_card().unwrap().to_string()),
+            "play blackjack" => {
+                let g = blackjack::Game::new(&String::from("temp"), 500);
+                let res = Some(g.hand_in_words());
+                self.active_games.push(g);
+                res
+            },
             _ => None,
         }
     }
@@ -67,7 +74,7 @@ impl slack::EventHandler for CryptoJackBot {
 fn has_command(message: &Option<String>) -> Option<String> {
     match message {
         &Some(ref text) => {
-            let re = Regex::new(r"/help (?P<command>.*?)$").unwrap();
+            let re = Regex::new(r"/dealer (?P<command>.*?)$").unwrap();
             match re.captures(&text) {
                 Some(capture) => Some(String::from(&capture["command"])),
                 _ => None,

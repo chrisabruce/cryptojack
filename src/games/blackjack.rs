@@ -1,5 +1,7 @@
 extern crate rand;
 
+use std::fmt;
+
 use self::rand::seq::SliceRandom;
 use self::rand::thread_rng;
 
@@ -38,9 +40,9 @@ impl Card {
     }
 }
 
-impl ToString for Card {
-    fn to_string(&self) -> String {
-        format!("{} of {:?}", self.name, self.suit)
+impl fmt::Display for Card {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{} of {:?}", self.name, self.suit)
     }
 }
 
@@ -113,6 +115,10 @@ impl Game {
         self.dealer_cards.push(self.deck.deal_card().unwrap());
         self.player_cards.push(self.deck.deal_card().unwrap());
         self.dealer_cards.push(self.deck.deal_card().unwrap());
+    }
+
+    pub fn hand_in_words(&self) -> String {
+        format!{"Dealer: {}, {}\nPlayer: {}, {}", self.dealer_cards[0], self.dealer_cards[1], self.player_cards[0], self.player_cards[1]}
     }
 }
 
