@@ -46,9 +46,7 @@ impl CryptoJackBot {
         match command.to_lowercase().as_str() {
             "play blackjack" => {
                 if let Some(u) = user {
-                    print!("\nUser: {}\n", u);
-                    let id = u.clone();
-                    let g = self.active_games.entry(id).or_insert(blackjack::Game::new(&String::from("temp"), 500));
+                    let g = self.active_games.entry(u.clone()).or_insert(blackjack::Game::new(&String::from("temp"), 500));
                     let res = Some(g.hand_in_words());
                     return res;
                 }
