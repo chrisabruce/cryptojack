@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use regex::Regex;
 use slack::{self, Event, RtmClient};
 
@@ -5,7 +7,7 @@ use games::blackjack;
 
 pub struct CryptoJackBot {
     pub name: String,
-    pub active_games: Vec<blackjack::Game>,
+    pub active_games: HashMap<String, blackjack::Game>,
     pub completed_games: Vec<blackjack::Game>,
 }
 
@@ -17,7 +19,7 @@ impl CryptoJackBot {
 
         CryptoJackBot {
             name: name.clone(),
-            active_games: Vec::new(), //TODO: Persist
+            active_games: HashMap::new(), //TODO: Persist
             completed_games: Vec::new(),  //TODO: Persist
         }
     }
@@ -27,7 +29,7 @@ impl CryptoJackBot {
             slack::Message::Standard(message) => {
                 print!("message");
                 if let Some(command) = has_command(&message.text) {
-                    if let Some(output) = self.eval_command(command) {
+                    if let Some(output) = self.eval_command(command, &message.user) {
                         let channel_id = message.channel.unwrap();
                         let _ = client.sender().send_message(&channel_id, &output);
                     } else if let Some(output) = has_bot_mention(&self, &message.text) {
@@ -40,13 +42,17 @@ impl CryptoJackBot {
         }
     }
 
-    fn eval_command(&mut self, command: String) -> Option<String> {
+    fn eval_command(&mut self, command: String, user: &Option<String>) -> Option<String> {
         match command.to_lowercase().as_str() {
             "play blackjack" => {
-                let g = blackjack::Game::new(&String::from("temp"), 500);
-                let res = Some(g.hand_in_words());
-                self.active_games.push(g);
-                res
+                if let Some(u) = user {
+                    print!("\nUser: {}\n", u);
+                    let id = u.clone();
+                    let g = self.active_games.entry(id).or_insert(blackjack::Game::new(&String::from("temp"), 500));
+                    let res = Some(g.hand_in_words());
+                    return res;
+                }
+                None
             },
             _ => None,
         }
@@ -74,7 +80,7 @@ impl slack::EventHandler for CryptoJackBot {
 fn has_command(message: &Option<String>) -> Option<String> {
     match message {
         &Some(ref text) => {
-            let re = Regex::new(r"/dealer (?P<command>.*?)$").unwrap();
+            let re = Regex::new(r"/game (?P<command>.*?)$").unwrap();
             match re.captures(&text) {
                 Some(capture) => Some(String::from(&capture["command"])),
                 _ => None,
