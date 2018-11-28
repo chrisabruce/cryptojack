@@ -78,7 +78,7 @@ impl slack::EventHandler for CryptoJackBot {
 fn has_command(message: &Option<String>) -> Option<String> {
     match message {
         &Some(ref text) => {
-            let re = Regex::new(r"/game (?P<command>.*?)$").unwrap();
+            let re = Regex::new(r"/blackjack (?P<command>.*?)$").unwrap();
             match re.captures(&text) {
                 Some(capture) => Some(String::from(&capture["command"])),
                 _ => None,
