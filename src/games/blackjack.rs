@@ -117,13 +117,47 @@ impl Game {
         self.dealer_cards.push(self.deck.deal_card().unwrap());
     }
 
+    pub fn hit(&mut self) -> String {
+        self.player_cards.push(self.deck.cards.pop().unwrap());
+        if score_cards(&self.player_cards) > 21 {
+            self.state = GameState::Lost;
+        }
+        self.hand_in_words()
+    }
+
+    pub fn stay(&mut self) -> String {
+        self.hand_in_words()
+
+    }
+
+
     pub fn hand_in_words(&self) -> String {
         match self.state {
-            GameState::PlayerTurn => format!{"Dealer: Face Down, {}\nPlayer: {}, {}", self.dealer_cards[1], self.player_cards[0], self.player_cards[1]},
-            GameState::DealerTurn => format!{"Dealer: {}, {}\nPlayer: {}, {}", self.dealer_cards[0], self.dealer_cards[1], self.player_cards[0], self.player_cards[1]},
+            GameState::PlayerTurn => format!{"Dealer: Face Down, {}\nPlayer: {}", self.dealer_cards[1], join_cards(&self.player_cards)},
+            GameState::DealerTurn => format!{"Dealer: {}\nPlayer: {}", join_cards(&self.dealer_cards), join_cards(&self.player_cards)},
+            GameState::Lost => format!("You busted! {}", join_cards(&self.player_cards)),
             _ => format!("unknown"),
         }
     }
+}
+
+fn join_cards(cards: &Vec<Card>) -> String {
+    cards.into_iter().map(|c| c.to_string()).collect::<Vec<String>>().join(", ")
+}
+
+fn score_cards(cards: &Vec<Card>) -> u8 {
+    let mut val_tot = 0;
+    let mut alt_tot = 0;
+    for card in cards {
+        val_tot += card.value;
+        alt_tot += card.alt_value;
+    }
+
+    if val_tot > 22 {
+        return alt_tot;
+    }
+
+    val_tot 
 }
 
 mod tests {

@@ -44,14 +44,21 @@ impl CryptoJackBot {
 
     fn eval_command(&mut self, command: String, user: &Option<String>) -> Option<String> {
         match command.to_lowercase().as_str() {
-            "play blackjack" => {
+            "bet" => {
                 if let Some(u) = user {
                     let g = self.active_games.entry(u.clone()).or_insert(blackjack::Game::new(&String::from("temp"), 500));
-                    let res = Some(g.hand_in_words());
-                    return res;
+                    return Some(g.hand_in_words());
                 }
                 None
             },
+            "hit" => {
+                if let Some(u) = user {
+                    let mut g = self.active_games.get_mut(u).unwrap();
+                    g.hit();
+                    return Some(g.hand_in_words());
+                }
+                None
+            }
             _ => None,
         }
     }
