@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use regex::Regex;
 use slack::{self, Event, RtmClient};
 
-use games::blackjack;
+use crate::games::blackjack;
 
 pub struct CryptoJackBot {
     pub name: String,
@@ -53,12 +53,19 @@ impl CryptoJackBot {
             },
             "hit" => {
                 if let Some(u) = user {
-                    let mut g = self.active_games.get_mut(u).unwrap();
+                    let g = self.active_games.get_mut(u).unwrap();
                     g.hit();
                     return Some(g.hand_in_words());
                 }
                 None
-            }
+            },
+            "stay" => {
+                if let Some(u) = user {
+                    let g = self.active_games.get_mut(u).unwrap();
+                    return Some(g.stay());
+                }
+                None
+            },
             _ => None,
         }
     }

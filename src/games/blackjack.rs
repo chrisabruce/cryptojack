@@ -126,8 +126,8 @@ impl Game {
     }
 
     pub fn stay(&mut self) -> String {
-        self.hand_in_words()
-
+        self.state = GameState::DealerTurn;
+        self.dealer_play()
     }
 
 
@@ -136,8 +136,17 @@ impl Game {
             GameState::PlayerTurn => format!{"Dealer: Face Down, {}\nPlayer: {}", self.dealer_cards[1], join_cards(&self.player_cards)},
             GameState::DealerTurn => format!{"Dealer: {}\nPlayer: {}", join_cards(&self.dealer_cards), join_cards(&self.player_cards)},
             GameState::Lost => format!("You busted! {}", join_cards(&self.player_cards)),
-            _ => format!("unknown"),
+            GameState::Won => format!("You Won! {}", join_cards(&self.player_cards)),
         }
+    }
+
+    fn dealer_play(&mut self) -> String {
+        if score_cards(&self.player_cards) > score_cards(&self.dealer_cards) {
+            self.state = GameState::Won;
+        } else {
+            self.state = GameState::Lost;
+        }
+        self.hand_in_words()
     }
 }
 
