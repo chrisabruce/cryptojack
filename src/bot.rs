@@ -12,13 +12,13 @@ pub struct CryptoJackBot {
 }
 
 impl CryptoJackBot {
-    pub fn new(name: &String) -> CryptoJackBot {
+    pub fn new(name: &str) -> CryptoJackBot {
         let mut d = blackjack::Deck::new(1);
         d.shuffle();
         print!("You got the {:?}", d);
 
         CryptoJackBot {
-            name: name.clone(),
+            name: name.to_string(),
             active_games: HashMap::new(), //TODO: Persist
             completed_games: Vec::new(),  //TODO: Persist
         }
@@ -29,7 +29,7 @@ impl CryptoJackBot {
             slack::Message::Standard(message) => {
                 print!("message");
                 if let Some(command) = has_command(&message.text) {
-                    if let Some(output) = self.eval_command(command, &message.user) {
+                    if let Some(output) = self.eval_command(&command, &message.user) {
                         let channel_id = message.channel.unwrap();
                         let _ = client.sender().send_message(&channel_id, &output);
                     } else if let Some(output) = has_bot_mention(&self, &message.text) {
@@ -42,12 +42,12 @@ impl CryptoJackBot {
         }
     }
 
-    fn eval_command(&mut self, command: String, user: &Option<String>) -> Option<String> {
+    fn eval_command(&mut self, command: &str, user: &Option<String>) -> Option<String> {
         if let Some(u) = user {
             let g = self
                 .active_games
                 .entry(u.clone())
-                .or_insert(blackjack::Game::new(&String::from("temp"), 500));
+                .or_insert_with(|| blackjack::Game::new(&String::from("temp"), 500));
 
             return match command.to_lowercase().as_str() {
                 "bet" => Some(g.hand_in_words()),
@@ -96,7 +96,7 @@ fn has_bot_mention(bot: &CryptoJackBot, message: &Option<String>) -> Option<Stri
         Some(text) => {
             let re = Regex::new(r"@(?P<bot>[\w_]+)").unwrap();
             for caps in re.captures_iter(&text) {
-                if bot.name == &caps["bot"] {
+                if bot.name == caps["bot"] {
                     return Some(String::from("Hi there!"));
                 };
             }

@@ -60,17 +60,16 @@ impl Deck {
         for _x in 0..size {
             for suit in &suits {
                 for i in 2..11 {
-                    deck.cards
-                        .push(Card::new(suit.clone(), i.to_string(), i, i));
+                    deck.cards.push(Card::new(*suit, i.to_string(), i, i));
                 }
                 deck.cards
-                    .push(Card::new(suit.clone(), String::from("Jack"), 10, 10));
+                    .push(Card::new(*suit, String::from("Jack"), 10, 10));
                 deck.cards
-                    .push(Card::new(suit.clone(), String::from("Queen"), 10, 10));
+                    .push(Card::new(*suit, String::from("Queen"), 10, 10));
                 deck.cards
-                    .push(Card::new(suit.clone(), String::from("King"), 10, 10));
+                    .push(Card::new(*suit, String::from("King"), 10, 10));
                 deck.cards
-                    .push(Card::new(suit.clone(), String::from("Ace"), 11, 2));
+                    .push(Card::new(*suit, String::from("Ace"), 11, 2));
             }
         }
         deck
@@ -96,10 +95,10 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new(player_id: &String, wager: u64) -> Game {
+    pub fn new(player_id: &str, wager: u64) -> Game {
         let mut game = Game {
-            player_id: player_id.clone(),
-            wager: wager,
+            player_id: player_id.to_string(),
+            wager,
             player_hand: Vec::new(),
             dealer_hand: Vec::new(),
             state: GameState::PlayerTurn,
@@ -153,7 +152,7 @@ impl Game {
     }
 }
 
-fn join_cards(cards: &Vec<Card>) -> String {
+fn join_cards(cards: &[Card]) -> String {
     cards
         .into_iter()
         .map(|c| c.to_string())
@@ -161,10 +160,9 @@ fn join_cards(cards: &Vec<Card>) -> String {
         .join(", ")
 }
 
-fn score_hand(hand: &Vec<Card>) -> u8 {
-    let num_aces = hand.iter().filter(|x| x.name == "Ace").count();
+fn score_hand(hand: &[Card]) -> u8 {
     let mut total: u8 = hand.iter().map(|x| x.value).sum();
-
+    let num_aces = hand.iter().filter(|x| x.name == "Ace").count();
     for _ in 0..num_aces {
         if total > 21 {
             total -= 10;
@@ -196,6 +194,11 @@ mod tests {
         let g = Game::new(&String::from("test"), 500);
         assert_eq!(g.player_hand.len(), 2);
         assert_eq!(g.dealer_hand.len(), 2);
+    }
+
+    #[test]
+    fn test_score_hand() {
+        assert_eq!(true, true);
     }
 
 }
