@@ -46,11 +46,14 @@ impl CryptoJackBot {
         match command.to_lowercase().as_str() {
             "bet" => {
                 if let Some(u) = user {
-                    let g = self.active_games.entry(u.clone()).or_insert(blackjack::Game::new(&String::from("temp"), 500));
+                    let g = self
+                        .active_games
+                        .entry(u.clone())
+                        .or_insert(blackjack::Game::new(&String::from("temp"), 500));
                     return Some(g.hand_in_words());
                 }
                 None
-            },
+            }
             "hit" => {
                 if let Some(u) = user {
                     let g = self.active_games.get_mut(u).unwrap();
@@ -58,14 +61,14 @@ impl CryptoJackBot {
                     return Some(g.hand_in_words());
                 }
                 None
-            },
+            }
             "stay" => {
                 if let Some(u) = user {
                     let g = self.active_games.get_mut(u).unwrap();
                     return Some(g.stay());
                 }
                 None
-            },
+            }
             _ => None,
         }
     }
@@ -91,7 +94,7 @@ impl slack::EventHandler for CryptoJackBot {
 
 fn has_command(message: &Option<String>) -> Option<String> {
     match message {
-        &Some(ref text) => {
+        Some(text) => {
             let re = Regex::new(r"/blackjack (?P<command>.*?)$").unwrap();
             match re.captures(&text) {
                 Some(capture) => Some(String::from(&capture["command"])),
@@ -104,7 +107,7 @@ fn has_command(message: &Option<String>) -> Option<String> {
 
 fn has_bot_mention(bot: &CryptoJackBot, message: &Option<String>) -> Option<String> {
     match message {
-        &Some(ref text) => {
+        Some(text) => {
             let re = Regex::new(r"@(?P<bot>[\w_]+)").unwrap();
             for caps in re.captures_iter(&text) {
                 if bot.name == &caps["bot"] {

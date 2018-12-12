@@ -130,11 +130,14 @@ impl Game {
         self.dealer_play()
     }
 
-
     pub fn hand_in_words(&self) -> String {
         match self.state {
-            GameState::PlayerTurn => format!{"Dealer: Face Down, {}\nPlayer: {}", self.dealer_cards[1], join_cards(&self.player_cards)},
-            GameState::DealerTurn => format!{"Dealer: {}\nPlayer: {}", join_cards(&self.dealer_cards), join_cards(&self.player_cards)},
+            GameState::PlayerTurn => {
+                format! {"Dealer: Face Down, {}\nPlayer: {}", self.dealer_cards[1], join_cards(&self.player_cards)}
+            }
+            GameState::DealerTurn => {
+                format! {"Dealer: {}\nPlayer: {}", join_cards(&self.dealer_cards), join_cards(&self.player_cards)}
+            }
             GameState::Lost => format!("You busted! {}", join_cards(&self.player_cards)),
             GameState::Won => format!("You Won! {}", join_cards(&self.player_cards)),
         }
@@ -151,7 +154,11 @@ impl Game {
 }
 
 fn join_cards(cards: &Vec<Card>) -> String {
-    cards.into_iter().map(|c| c.to_string()).collect::<Vec<String>>().join(", ")
+    cards
+        .into_iter()
+        .map(|c| c.to_string())
+        .collect::<Vec<String>>()
+        .join(", ")
 }
 
 fn score_cards(cards: &Vec<Card>) -> u8 {
@@ -166,7 +173,7 @@ fn score_cards(cards: &Vec<Card>) -> u8 {
         return alt_tot;
     }
 
-    val_tot 
+    val_tot
 }
 
 mod tests {
