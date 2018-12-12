@@ -89,8 +89,8 @@ impl Deck {
 pub struct Game {
     pub player_id: String,
     pub wager: u64,
-    pub player_cards: Vec<Card>,
-    pub dealer_cards: Vec<Card>,
+    pub player_hand: Vec<Card>,
+    pub dealer_hand: Vec<Card>,
     pub state: GameState,
     pub deck: Deck,
 }
@@ -100,8 +100,8 @@ impl Game {
         let mut game = Game {
             player_id: player_id.clone(),
             wager: wager,
-            player_cards: Vec::new(),
-            dealer_cards: Vec::new(),
+            player_hand: Vec::new(),
+            dealer_hand: Vec::new(),
             state: GameState::PlayerTurn,
             deck: Deck::new(2),
         };
@@ -111,15 +111,15 @@ impl Game {
     }
 
     pub fn flop(&mut self) {
-        self.player_cards.push(self.deck.deal_card().unwrap());
-        self.dealer_cards.push(self.deck.deal_card().unwrap());
-        self.player_cards.push(self.deck.deal_card().unwrap());
-        self.dealer_cards.push(self.deck.deal_card().unwrap());
+        self.player_hand.push(self.deck.deal_card().unwrap());
+        self.dealer_hand.push(self.deck.deal_card().unwrap());
+        self.player_hand.push(self.deck.deal_card().unwrap());
+        self.dealer_hand.push(self.deck.deal_card().unwrap());
     }
 
     pub fn hit(&mut self) -> String {
-        self.player_cards.push(self.deck.cards.pop().unwrap());
-        if score_cards(&self.player_cards) > 21 {
+        self.player_hand.push(self.deck.cards.pop().unwrap());
+        if score_hand(&self.player_hand) > 21 {
             self.state = GameState::Lost;
         }
         self.hand_in_words()
@@ -133,18 +133,18 @@ impl Game {
     pub fn hand_in_words(&self) -> String {
         match self.state {
             GameState::PlayerTurn => {
-                format! {"Dealer: Face Down, {}\nPlayer: {}", self.dealer_cards[1], join_cards(&self.player_cards)}
+                format! {"Dealer: Face Down, {}\nPlayer: {}", self.dealer_hand[1], join_cards(&self.player_hand)}
             }
             GameState::DealerTurn => {
-                format! {"Dealer: {}\nPlayer: {}", join_cards(&self.dealer_cards), join_cards(&self.player_cards)}
+                format! {"Dealer: {}\nPlayer: {}", join_cards(&self.dealer_hand), join_cards(&self.player_hand)}
             }
-            GameState::Lost => format!("You busted! {}", join_cards(&self.player_cards)),
-            GameState::Won => format!("You Won! {}", join_cards(&self.player_cards)),
+            GameState::Lost => format!("You busted! {}", join_cards(&self.player_hand)),
+            GameState::Won => format!("You Won! {}", join_cards(&self.player_hand)),
         }
     }
 
     fn dealer_play(&mut self) -> String {
-        if score_cards(&self.player_cards) > score_cards(&self.dealer_cards) {
+        if score_hand(&self.player_hand) > score_hand(&self.dealer_hand) {
             self.state = GameState::Won;
         } else {
             self.state = GameState::Lost;
@@ -161,10 +161,10 @@ fn join_cards(cards: &Vec<Card>) -> String {
         .join(", ")
 }
 
-fn score_cards(cards: &Vec<Card>) -> u8 {
+fn score_hand(hand: &Vec<Card>) -> u8 {
     let mut val_tot = 0;
     let mut alt_tot = 0;
-    for card in cards {
+    for card in hand {
         val_tot += card.value;
         alt_tot += card.alt_value;
     }
@@ -194,8 +194,8 @@ mod tests {
     #[test]
     fn test_new_game() {
         let g = Game::new(&String::from("test"), 500);
-        assert_eq!(g.player_cards.len(), 2);
-        assert_eq!(g.dealer_cards.len(), 2);
+        assert_eq!(g.player_hand.len(), 2);
+        assert_eq!(g.dealer_hand.len(), 2);
     }
 
 }
