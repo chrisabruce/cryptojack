@@ -43,34 +43,20 @@ impl CryptoJackBot {
     }
 
     fn eval_command(&mut self, command: String, user: &Option<String>) -> Option<String> {
-        match command.to_lowercase().as_str() {
-            "bet" => {
-                if let Some(u) = user {
-                    let g = self
-                        .active_games
-                        .entry(u.clone())
-                        .or_insert(blackjack::Game::new(&String::from("temp"), 500));
-                    return Some(g.hand_in_words());
-                }
-                None
-            }
-            "hit" => {
-                if let Some(u) = user {
-                    let g = self.active_games.get_mut(u).unwrap();
-                    g.hit();
-                    return Some(g.hand_in_words());
-                }
-                None
-            }
-            "stay" => {
-                if let Some(u) = user {
-                    let g = self.active_games.get_mut(u).unwrap();
-                    return Some(g.stay());
-                }
-                None
-            }
-            _ => None,
+        if let Some(u) = user {
+            let g = self
+                .active_games
+                .entry(u.clone())
+                .or_insert(blackjack::Game::new(&String::from("temp"), 500));
+
+            return match command.to_lowercase().as_str() {
+                "bet" => Some(g.hand_in_words()),
+                "hit" => Some(g.hit()),
+                "stay" => Some(g.stay()),
+                _ => None,
+            };
         }
+        None
     }
 }
 
