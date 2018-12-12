@@ -162,18 +162,18 @@ fn join_cards(cards: &Vec<Card>) -> String {
 }
 
 fn score_hand(hand: &Vec<Card>) -> u8 {
-    let mut val_tot = 0;
-    let mut alt_tot = 0;
-    for card in hand {
-        val_tot += card.value;
-        alt_tot += card.alt_value;
+    let num_aces = hand.iter().filter(|x| x.name == "Ace").count();
+    let mut total: u8 = hand.iter().map(|x| x.value).sum();
+
+    for _ in 0..num_aces {
+        if total > 21 {
+            total -= 10;
+        } else {
+            break;
+        }
     }
 
-    if val_tot > 22 {
-        return alt_tot;
-    }
-
-    val_tot
+    total
 }
 
 mod tests {
