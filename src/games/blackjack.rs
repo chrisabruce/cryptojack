@@ -40,7 +40,7 @@ impl fmt::Display for Card {
             Suit::Spades => "\u{2660}",
             Suit::Hearts => "\u{2665}",
             Suit::Diamonds => "\u{2666}",
-            Suit::Clubs => "\u{2663}}",
+            Suit::Clubs => "\u{2663}",
         };
 
         write!(f, "{}{}", self.name, s)
@@ -63,10 +63,10 @@ impl Deck {
                 for i in 2..11 {
                     deck.cards.push(Card::new(*suit, i.to_string(), i));
                 }
-                deck.cards.push(Card::new(*suit, String::from("Jack"), 10));
-                deck.cards.push(Card::new(*suit, String::from("Queen"), 10));
-                deck.cards.push(Card::new(*suit, String::from("King"), 10));
-                deck.cards.push(Card::new(*suit, String::from("Ace"), 11));
+                deck.cards.push(Card::new(*suit, String::from("J"), 10));
+                deck.cards.push(Card::new(*suit, String::from("Q"), 10));
+                deck.cards.push(Card::new(*suit, String::from("K"), 10));
+                deck.cards.push(Card::new(*suit, String::from("A"), 11));
             }
         }
         deck
@@ -159,7 +159,7 @@ fn join_cards(cards: &[Card]) -> String {
 
 fn score_hand(hand: &[Card]) -> u8 {
     let mut total: u8 = hand.iter().map(|x| x.value).sum();
-    let num_aces = hand.iter().filter(|x| x.name == "Ace").count();
+    let num_aces = hand.iter().filter(|x| x.name == "A").count();
     for _ in 0..num_aces {
         if total > 21 {
             total -= 10;
@@ -196,17 +196,17 @@ mod tests {
     #[test]
     fn test_score_hand_blackjack() {
         let mut test_hand: Vec<Card> = Vec::new();
-        test_hand.push(Card::new(Suit::Spades, "Ace".to_string(), 11));
-        test_hand.push(Card::new(Suit::Spades, "King".to_string(), 10));
+        test_hand.push(Card::new(Suit::Spades, "A".to_string(), 11));
+        test_hand.push(Card::new(Suit::Spades, "K".to_string(), 10));
 
         assert_eq!(score_hand(&test_hand), 21);
     }
     #[test]
     fn test_score_hand_bust() {
         let mut test_hand: Vec<Card> = Vec::new();
-        test_hand.push(Card::new(Suit::Hearts, "King".to_string(), 10));
-        test_hand.push(Card::new(Suit::Spades, "King".to_string(), 10));
-        test_hand.push(Card::new(Suit::Spades, "Queen".to_string(), 10));
+        test_hand.push(Card::new(Suit::Hearts, "K".to_string(), 10));
+        test_hand.push(Card::new(Suit::Spades, "K".to_string(), 10));
+        test_hand.push(Card::new(Suit::Spades, "Q".to_string(), 10));
 
         assert_eq!(score_hand(&test_hand), 30);
     }
@@ -214,9 +214,9 @@ mod tests {
     #[test]
     fn test_score_hand_ace_reduced() {
         let mut test_hand: Vec<Card> = Vec::new();
-        test_hand.push(Card::new(Suit::Hearts, "King".to_string(), 10));
-        test_hand.push(Card::new(Suit::Spades, "King".to_string(), 10));
-        test_hand.push(Card::new(Suit::Spades, "Ace".to_string(), 11));
+        test_hand.push(Card::new(Suit::Hearts, "K".to_string(), 10));
+        test_hand.push(Card::new(Suit::Spades, "K".to_string(), 10));
+        test_hand.push(Card::new(Suit::Spades, "A".to_string(), 11));
 
         assert_eq!(score_hand(&test_hand), 21);
     }
