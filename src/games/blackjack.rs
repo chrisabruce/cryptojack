@@ -187,8 +187,30 @@ mod tests {
     }
 
     #[test]
-    fn test_score_hand() {
-        assert_eq!(true, true);
+    fn test_score_hand_blackjack() {
+        let mut test_hand: Vec<Card> = Vec::new();
+        test_hand.push(Card::new(Suit::Spades, "Ace".to_string(), 11));
+        test_hand.push(Card::new(Suit::Spades, "King".to_string(), 10));
+
+        assert_eq!(score_hand(&test_hand), 21);
+    }
+    #[test]
+    fn test_score_hand_bust() {
+        let mut test_hand: Vec<Card> = Vec::new();
+        test_hand.push(Card::new(Suit::Hearts, "King".to_string(), 10));
+        test_hand.push(Card::new(Suit::Spades, "King".to_string(), 10));
+        test_hand.push(Card::new(Suit::Spades, "Queen".to_string(), 10));
+
+        assert_eq!(score_hand(&test_hand), 30);
     }
 
+    #[test]
+    fn test_score_hand_ace_reduced() {
+        let mut test_hand: Vec<Card> = Vec::new();
+        test_hand.push(Card::new(Suit::Hearts, "King".to_string(), 10));
+        test_hand.push(Card::new(Suit::Spades, "King".to_string(), 10));
+        test_hand.push(Card::new(Suit::Spades, "Ace".to_string(), 11));
+
+        assert_eq!(score_hand(&test_hand), 21);
+    }
 }
