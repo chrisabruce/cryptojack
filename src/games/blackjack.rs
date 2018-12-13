@@ -26,17 +26,11 @@ pub struct Card {
     pub suit: Suit,
     pub name: String,
     pub value: u8,
-    pub alt_value: u8,
 }
 
 impl Card {
-    pub fn new(suit: Suit, name: String, value: u8, alt_value: u8) -> Card {
-        Card {
-            suit,
-            name,
-            value,
-            alt_value,
-        }
+    pub fn new(suit: Suit, name: String, value: u8) -> Card {
+        Card { suit, name, value }
     }
 }
 
@@ -60,16 +54,12 @@ impl Deck {
         for _x in 0..size {
             for suit in &suits {
                 for i in 2..11 {
-                    deck.cards.push(Card::new(*suit, i.to_string(), i, i));
+                    deck.cards.push(Card::new(*suit, i.to_string(), i));
                 }
-                deck.cards
-                    .push(Card::new(*suit, String::from("Jack"), 10, 10));
-                deck.cards
-                    .push(Card::new(*suit, String::from("Queen"), 10, 10));
-                deck.cards
-                    .push(Card::new(*suit, String::from("King"), 10, 10));
-                deck.cards
-                    .push(Card::new(*suit, String::from("Ace"), 11, 2));
+                deck.cards.push(Card::new(*suit, String::from("Jack"), 10));
+                deck.cards.push(Card::new(*suit, String::from("Queen"), 10));
+                deck.cards.push(Card::new(*suit, String::from("King"), 10));
+                deck.cards.push(Card::new(*suit, String::from("Ace"), 11));
             }
         }
         deck
