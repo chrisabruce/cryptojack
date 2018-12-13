@@ -36,7 +36,14 @@ impl Card {
 
 impl fmt::Display for Card {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{} of {:?}", self.name, self.suit)
+        let s = match self.suit {
+            Suit::Spades => "\u{2660}",
+            Suit::Hearts => "\u{2665}",
+            Suit::Diamonds => "\u{2666}",
+            Suit::Clubs => "\u{2663}}",
+        };
+
+        write!(f, "{}{}", self.name, s)
     }
 }
 
