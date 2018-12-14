@@ -5,7 +5,7 @@ use std::fmt;
 use self::rand::seq::SliceRandom;
 use self::rand::thread_rng;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Suit {
     Hearts,
     Diamonds,
@@ -13,10 +13,13 @@ pub enum Suit {
     Spades,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum GameState {
     PlayerTurn,
     DealerTurn,
+    Busted,
+    Blackjack,
+    Push,
     Won,
     Lost,
 }
@@ -106,46 +109,105 @@ impl Game {
         game
     }
 
-    pub fn flop(&mut self) {
+    fn flop(&mut self) -> String {
         self.player_hand.push(self.deck.deal_card().unwrap());
         self.dealer_hand.push(self.deck.deal_card().unwrap());
         self.player_hand.push(self.deck.deal_card().unwrap());
         self.dealer_hand.push(self.deck.deal_card().unwrap());
+
+        let ps = score_hand(&self.player_hand);
+        let ds = score_hand(&self.dealer_hand);
+
+        // Check for Blackjack
+        if ps == 21 && ds != 21 {
+            // Blackjack
+            self.state = GameState::Push;
+        } else if ps == 21 {
+            self.state = GameState::Blackjack;
+        }
+
+        self.hand_in_words()
     }
 
     pub fn hit(&mut self) -> String {
-        self.player_hand.push(self.deck.cards.pop().unwrap());
-        if score_hand(&self.player_hand) > 21 {
-            self.state = GameState::Lost;
+        if self.state == GameState::PlayerTurn {
+            self.player_hand.push(self.deck.deal_card().unwrap());
+            if score_hand(&self.player_hand) > 21 {
+                self.state = GameState::Busted;
+            }
         }
         self.hand_in_words()
     }
 
     pub fn stay(&mut self) -> String {
-        self.state = GameState::DealerTurn;
-        self.dealer_play()
+        if self.state == GameState::PlayerTurn {
+            self.state = GameState::DealerTurn;
+            return self.dealer_play();
+        }
+        self.hand_in_words()
+    }
+
+    fn dealer_play(&mut self) -> String {
+        while score_hand(&self.dealer_hand) < 17 {
+            self.dealer_hand.push(self.deck.deal_card().unwrap());
+        }
+
+        let ps = score_hand(&self.player_hand);
+        let ds = score_hand(&self.dealer_hand);
+
+        if ps > ds {
+            self.state = GameState::Won;
+        } else if ps == ds {
+            self.state = GameState::Push;
+        } else {
+            self.state = GameState::Lost;
+        }
+
+        self.hand_in_words()
     }
 
     pub fn hand_in_words(&self) -> String {
         match self.state {
-            GameState::PlayerTurn => {
-                format! {"Dealer: Face Down, {}\nPlayer: {}", self.dealer_hand[1], join_cards(&self.player_hand)}
-            }
-            GameState::DealerTurn => {
-                format! {"Dealer: {}\nPlayer: {}", join_cards(&self.dealer_hand), join_cards(&self.player_hand)}
-            }
-            GameState::Lost => format!("You busted! {}", join_cards(&self.player_hand)),
-            GameState::Won => format!("You Won! {}", join_cards(&self.player_hand)),
-        }
-    }
+            GameState::PlayerTurn => format!(
+                "Dealer: Face Down, {}\nPlayer: {}\n\nHit or Stay?",
+                self.dealer_hand[1],
+                join_cards(&self.player_hand)
+            ),
+            GameState::DealerTurn => format!(
+                "Dealer: {}\nPlayer: {}",
+                join_cards(&self.dealer_hand),
+                join_cards(&self.player_hand)
+            ),
+            GameState::Blackjack => format!(
+                "*You've got Blackjack!*\nDealer: {}\nPlayer: {}",
+                join_cards(&self.dealer_hand),
+                join_cards(&self.player_hand)
+            ),
 
-    fn dealer_play(&mut self) -> String {
-        if score_hand(&self.player_hand) > score_hand(&self.dealer_hand) {
-            self.state = GameState::Won;
-        } else {
-            self.state = GameState::Lost;
+            GameState::Push => format!(
+                "*It's a Push!*\nDealer: {}\nPlayer: {}",
+                join_cards(&self.dealer_hand),
+                join_cards(&self.player_hand)
+            ),
+
+            GameState::Busted => format!(
+                "*You Busted!*\nDealer: {}\nPlayer: {}",
+                join_cards(&self.dealer_hand),
+                join_cards(&self.player_hand)
+            ),
+
+            GameState::Lost => format!(
+                "*You Lost!*\nDealer: {}\nPlayer: {}",
+                join_cards(&self.dealer_hand),
+                join_cards(&self.player_hand)
+            ),
+
+            GameState::Won => format!(
+                "*You Won!*\nDealer: {}\nPlayer: {}",
+                join_cards(&self.dealer_hand),
+                join_cards(&self.player_hand)
+            ),
         }
-        self.hand_in_words()
     }
 }
 
