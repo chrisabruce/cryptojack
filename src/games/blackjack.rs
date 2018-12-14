@@ -220,4 +220,14 @@ mod tests {
 
         assert_eq!(score_hand(&test_hand), 21);
     }
+
+    #[test]
+    fn test_score_hand_not_all_ace_reduced() {
+        let mut test_hand: Vec<Card> = Vec::new();
+        test_hand.push(Card::new(Suit::Hearts, "8".to_string(), 8));
+        test_hand.push(Card::new(Suit::Spades, "A".to_string(), 11));
+        test_hand.push(Card::new(Suit::Spades, "A".to_string(), 11));
+
+        assert_eq!(score_hand(&test_hand), 20);
+    }
 }
