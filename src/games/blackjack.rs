@@ -5,6 +5,8 @@ use std::fmt;
 use self::rand::seq::SliceRandom;
 use self::rand::thread_rng;
 
+const BLACKJACK_PAYOUT: f32 = 1.5;
+
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Suit {
     Hearts,
@@ -94,6 +96,7 @@ pub struct Game {
     pub dealer_hand: Vec<Card>,
     pub state: GameState,
     pub deck: Deck,
+    pub payout: u64,
 }
 
 impl Game {
@@ -105,6 +108,7 @@ impl Game {
             dealer_hand: Vec::new(),
             state: GameState::PlaceBet,
             deck: Deck::new(2),
+            payout: 0,
         };
         game.deck.shuffle();
         game
@@ -132,8 +136,10 @@ impl Game {
         if ps == 21 && ds == 21 {
             // Blackjack
             self.state = GameState::Push;
+            self.payout = self.wager;
         } else if ps == 21 {
             self.state = GameState::Blackjack;
+            self.payout = self.wager + (self.wager as f32 * BLACKJACK_PAYOUT) as u64;
         }
     }
 
@@ -165,10 +171,13 @@ impl Game {
 
         if ps > ds {
             self.state = GameState::Won;
+            self.payout = self.wager * 2;
         } else if ps == ds {
             self.state = GameState::Push;
+            self.payout = self.wager;
         } else {
             self.state = GameState::Lost;
+            self.payout = 0;
         }
 
         self.hand_in_words()
@@ -195,15 +204,17 @@ impl Game {
                 join_cards(&self.player_hand)
             ),
             GameState::Blackjack => format!(
-                "*You've got Blackjack!*\nDealer: {}\nPlayer: {}",
+                "*You've got Blackjack!*\nDealer: {}\nPlayer: {}\n_Payout_: {}",
                 join_cards(&self.dealer_hand),
-                join_cards(&self.player_hand)
+                join_cards(&self.player_hand),
+                self.payout
             ),
 
             GameState::Push => format!(
-                "*It's a Push!*\nDealer: {}\nPlayer: {}",
+                "*It's a Push!*\nDealer: {}\nPlayer: {}\n_Payout_: {}",
                 join_cards(&self.dealer_hand),
-                join_cards(&self.player_hand)
+                join_cards(&self.player_hand),
+                self.payout
             ),
 
             GameState::Busted => format!(
@@ -219,9 +230,10 @@ impl Game {
             ),
 
             GameState::Won => format!(
-                "*You Won!*\nDealer: {}\nPlayer: {}",
+                "*You Won!*\nDealer: {}\nPlayer: {}\n_Payout_: {}",
                 join_cards(&self.dealer_hand),
-                join_cards(&self.player_hand)
+                join_cards(&self.player_hand),
+                self.payout
             ),
         }
     }
