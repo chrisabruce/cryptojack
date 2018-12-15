@@ -1,9 +1,12 @@
 extern crate rand;
+extern crate separator;
 
 use std::fmt;
 
 use self::rand::seq::SliceRandom;
 use self::rand::thread_rng;
+
+use separator::Separatable;
 
 const BLACKJACK_PAYOUT: f32 = 1.5;
 
@@ -207,14 +210,14 @@ impl Game {
                 "*You've got Blackjack!*\nDealer: {}\nPlayer: {}\n_Payout_: {}",
                 join_cards(&self.dealer_hand),
                 join_cards(&self.player_hand),
-                self.payout
+                self.payout.separated_string()
             ),
 
             GameState::Push => format!(
                 "*It's a Push!*\nDealer: {}\nPlayer: {}\n_Payout_: {}",
                 join_cards(&self.dealer_hand),
                 join_cards(&self.player_hand),
-                self.payout
+                self.payout.separated_string()
             ),
 
             GameState::Busted => format!(
@@ -233,7 +236,7 @@ impl Game {
                 "*You Won!*\nDealer: {}\nPlayer: {}\n_Payout_: {}",
                 join_cards(&self.dealer_hand),
                 join_cards(&self.player_hand),
-                self.payout
+                self.payout.separated_string()
             ),
         }
     }
