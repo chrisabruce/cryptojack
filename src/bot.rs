@@ -13,7 +13,7 @@ pub struct CryptoJackBot {
 
 impl CryptoJackBot {
     pub fn new(name: &str) -> CryptoJackBot {
-        let mut d = blackjack::Deck::new(4);
+        let mut d = blackjack::Deck::new(1);
         d.shuffle();
 
         CryptoJackBot {
