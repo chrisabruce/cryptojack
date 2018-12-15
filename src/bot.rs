@@ -43,8 +43,8 @@ impl CryptoJackBot {
 
     fn eval_command(&mut self, command: &str, user: &Option<String>) -> Option<String> {
         let command = command.to_lowercase();
-        let args: Vec<&str> = command.split(" ").collect();
-        if args.len() > 0 {
+        let args: Vec<&str> = command.split(' ').collect();
+        if !args.is_empty() {
             if let Some(u) = user {
                 let g = self
                     .active_games
@@ -53,12 +53,12 @@ impl CryptoJackBot {
 
                 let response = match args[0] {
                     "play" => Some(g.hand_in_words()),
-                    "bet" if args.len() > 1 => match args[1].parse::<u64>() {
+                    "bet" | "b" if args.len() > 1 => match args[1].parse::<u64>() {
                         Ok(n) => Some(g.bet(n)),
                         Err(_) => Some("Not a valid bet!".to_string()),
                     },
-                    "hit" => Some(g.hit()),
-                    "stay" => Some(g.stay()),
+                    "hit" | "h" => Some(g.hit()),
+                    "stay" | "s" => Some(g.stay()),
                     _ => None,
                 };
 
