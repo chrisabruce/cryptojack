@@ -27,7 +27,7 @@ impl CryptoJackBot {
         match message {
             slack::Message::Standard(message) => {
                 print!("message");
-                if let Some(command) = has_command(&message.text) {
+                if let Some(command) = has_command(&message.text, &message.channel) {
                     if let Some(output) = self.eval_command(&command, &message.user) {
                         let channel_id = message.channel.unwrap();
                         let _ = client.sender().send_message(&channel_id, &output);
@@ -88,17 +88,25 @@ impl slack::EventHandler for CryptoJackBot {
     }
 }
 
-fn has_command(message: &Option<String>) -> Option<String> {
-    match message {
-        Some(text) => {
-            let re = Regex::new(r"/blackjack (?P<command>.*?)$").unwrap();
-            match re.captures(&text) {
-                Some(capture) => Some(String::from(&capture["command"])),
-                _ => None,
+fn has_command(message: &Option<String>, channel: &Option<String>) -> Option<String> {
+    if let Some(c) = channel {
+        let match_str = if c.starts_with('D') {
+            r"(?P<command>.*?)$"
+        } else {
+            r"/blackjack (?P<command>.*?)$"
+        };
+        return match message {
+            Some(text) => {
+                let re = Regex::new(match_str).unwrap();
+                match re.captures(&text) {
+                    Some(capture) => Some(String::from(&capture["command"])),
+                    _ => None,
+                }
             }
-        }
-        _ => None,
+            _ => None,
+        };
     }
+    None
 }
 
 fn has_bot_mention(bot: &CryptoJackBot, message: &Option<String>) -> Option<String> {
