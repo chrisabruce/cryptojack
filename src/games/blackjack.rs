@@ -114,12 +114,12 @@ impl Game {
         if self.state == GameState::PlaceBet {
             self.wager = wager;
             self.state = GameState::PlayerTurn;
-            return self.flop();
+            self.flop();
         }
         self.hand_in_words()
     }
 
-    fn flop(&mut self) -> String {
+    fn flop(&mut self) {
         self.player_hand.push(self.deck.deal_card().unwrap());
         self.dealer_hand.push(self.deck.deal_card().unwrap());
         self.player_hand.push(self.deck.deal_card().unwrap());
@@ -135,8 +135,6 @@ impl Game {
         } else if ps == 21 {
             self.state = GameState::Blackjack;
         }
-
-        self.hand_in_words()
     }
 
     pub fn hit(&mut self) -> String {
