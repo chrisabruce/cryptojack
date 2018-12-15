@@ -13,9 +13,8 @@ pub struct CryptoJackBot {
 
 impl CryptoJackBot {
     pub fn new(name: &str) -> CryptoJackBot {
-        let mut d = blackjack::Deck::new(1);
+        let mut d = blackjack::Deck::new(4);
         d.shuffle();
-        print!("You got the {:?}", d);
 
         CryptoJackBot {
             name: name.to_string(),
@@ -47,14 +46,25 @@ impl CryptoJackBot {
             let g = self
                 .active_games
                 .entry(u.clone())
-                .or_insert_with(|| blackjack::Game::new(&String::from("temp"), 500));
+                .or_insert_with(|| blackjack::Game::new(&u));
 
-            return match command.to_lowercase().as_str() {
-                "bet" => Some(g.hand_in_words()),
+            let response = match command.to_lowercase().as_str() {
+                "play" => Some(g.hand_in_words()),
+                "bet" => Some(g.bet(500)),
                 "hit" => Some(g.hit()),
                 "stay" => Some(g.stay()),
                 _ => None,
             };
+
+            let is_over = g.is_over();
+            let g = g.clone();
+
+            if is_over {
+                self.active_games.remove(u);
+                self.completed_games.push(g.clone());
+            };
+
+            return response;
         }
         None
     }

@@ -15,6 +15,7 @@ pub enum Suit {
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum GameState {
+    PlaceBet,
     PlayerTurn,
     DealerTurn,
     Busted,
@@ -24,7 +25,7 @@ pub enum GameState {
     Lost,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Card {
     pub suit: Suit,
     pub name: String,
@@ -50,7 +51,7 @@ impl fmt::Display for Card {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Deck {
     cards: Vec<Card>,
 }
@@ -85,6 +86,7 @@ impl Deck {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct Game {
     pub player_id: String,
     pub wager: u64,
@@ -95,18 +97,23 @@ pub struct Game {
 }
 
 impl Game {
-    pub fn new(player_id: &str, wager: u64) -> Game {
+    pub fn new(player_id: &str) -> Game {
         let mut game = Game {
             player_id: player_id.to_string(),
-            wager,
+            wager: 0,
             player_hand: Vec::new(),
             dealer_hand: Vec::new(),
-            state: GameState::PlayerTurn,
+            state: GameState::PlaceBet,
             deck: Deck::new(2),
         };
         game.deck.shuffle();
-        game.flop();
         game
+    }
+
+    pub fn bet(&mut self, wager: u64) -> String {
+        self.wager = wager;
+        self.state = GameState::PlayerTurn;
+        self.flop()
     }
 
     fn flop(&mut self) -> String {
@@ -166,8 +173,16 @@ impl Game {
         self.hand_in_words()
     }
 
+    pub fn is_over(&self) -> bool {
+        self.state != GameState::PlaceBet
+            && self.state != GameState::PlayerTurn
+            && self.state != GameState::DealerTurn
+    }
+
     pub fn hand_in_words(&self) -> String {
         match self.state {
+            GameState::PlaceBet => "Bet [amount]".to_string(),
+
             GameState::PlayerTurn => format!(
                 "Dealer: Face Down, {}\nPlayer: {}\n\nHit or Stay?",
                 self.dealer_hand[1],
@@ -250,7 +265,7 @@ mod tests {
 
     #[test]
     fn test_new_game() {
-        let g = Game::new(&String::from("test"), 500);
+        let g = Game::new(&String::from("test"));
         assert_eq!(g.player_hand.len(), 2);
         assert_eq!(g.dealer_hand.len(), 2);
     }
