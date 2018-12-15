@@ -111,9 +111,12 @@ impl Game {
     }
 
     pub fn bet(&mut self, wager: u64) -> String {
-        self.wager = wager;
-        self.state = GameState::PlayerTurn;
-        self.flop()
+        if self.state == GameState::PlaceBet {
+            self.wager = wager;
+            self.state = GameState::PlayerTurn;
+            return self.flop();
+        }
+        self.hand_in_words()
     }
 
     fn flop(&mut self) -> String {
