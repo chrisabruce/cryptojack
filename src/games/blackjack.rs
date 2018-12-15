@@ -126,7 +126,7 @@ impl Game {
         let ds = score_hand(&self.dealer_hand);
 
         // Check for Blackjack
-        if ps == 21 && ds != 21 {
+        if ps == 21 && ds == 21 {
             // Blackjack
             self.state = GameState::Push;
         } else if ps == 21 {
