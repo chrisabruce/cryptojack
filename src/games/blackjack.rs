@@ -304,11 +304,12 @@ mod tests {
     #[test]
     fn test_score_hand_ace_reduced() {
         let mut test_hand: Vec<Card> = Vec::new();
-        test_hand.push(Card::new(Suit::Hearts, "K".to_string(), 10));
-        test_hand.push(Card::new(Suit::Spades, "K".to_string(), 10));
-        test_hand.push(Card::new(Suit::Spades, "A".to_string(), 11));
+        test_hand.push(Card::new(Suit::Hearts, "A".to_string(), 11));
+        test_hand.push(Card::new(Suit::Spades, "5".to_string(), 5));
+        test_hand.push(Card::new(Suit::Spades, "Q".to_string(), 10));
+        test_hand.push(Card::new(Suit::Spades, "9".to_string(), 9));
 
-        assert_eq!(score_hand(&test_hand), 21);
+        assert_eq!(score_hand(&test_hand), 25);
     }
 
     #[test]

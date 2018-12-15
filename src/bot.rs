@@ -42,29 +42,36 @@ impl CryptoJackBot {
     }
 
     fn eval_command(&mut self, command: &str, user: &Option<String>) -> Option<String> {
-        if let Some(u) = user {
-            let g = self
-                .active_games
-                .entry(u.clone())
-                .or_insert_with(|| blackjack::Game::new(&u));
+        let command = command.to_lowercase();
+        let args: Vec<&str> = command.split(" ").collect();
+        if args.len() > 0 {
+            if let Some(u) = user {
+                let g = self
+                    .active_games
+                    .entry(u.clone())
+                    .or_insert_with(|| blackjack::Game::new(&u));
 
-            let response = match command.to_lowercase().as_str() {
-                "play" => Some(g.hand_in_words()),
-                "bet" => Some(g.bet(500)),
-                "hit" => Some(g.hit()),
-                "stay" => Some(g.stay()),
-                _ => None,
-            };
+                let response = match args[0] {
+                    "play" => Some(g.hand_in_words()),
+                    "bet" if args.len() > 1 => match args[1].parse::<u64>() {
+                        Ok(n) => Some(g.bet(n)),
+                        Err(_) => Some("Not a valid bet!".to_string()),
+                    },
+                    "hit" => Some(g.hit()),
+                    "stay" => Some(g.stay()),
+                    _ => None,
+                };
 
-            let is_over = g.is_over();
-            let g = g.clone();
+                let is_over = g.is_over();
+                let g = g.clone();
 
-            if is_over {
-                self.active_games.remove(u);
-                self.completed_games.push(g.clone());
-            };
+                if is_over {
+                    self.active_games.remove(u);
+                    self.completed_games.push(g.clone());
+                };
 
-            return response;
+                return response;
+            }
         }
         None
     }
