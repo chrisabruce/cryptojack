@@ -1,10 +1,7 @@
-extern crate rand;
-extern crate separator;
-
 use std::fmt;
 
-use self::rand::seq::SliceRandom;
-use self::rand::thread_rng;
+use rand::seq::SliceRandom;
+use rand::thread_rng;
 
 use separator::Separatable;
 

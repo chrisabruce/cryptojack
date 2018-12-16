@@ -1,6 +1,6 @@
-extern crate dotenv;
-extern crate regex;
-extern crate slack;
+// extern crate dotenv;
+// extern crate regex;
+// extern crate slack;
 
 use dotenv::dotenv;
 use slack::RtmClient;
