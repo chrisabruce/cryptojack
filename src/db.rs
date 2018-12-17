@@ -19,6 +19,19 @@ impl Store {
         )
         .unwrap();
 
+        conn.execute(
+            "create table if not exists accounts (
+                id integer primary key,
+                user_id integer,
+                in_address text,
+                out_address text,
+                balance,
+                created_at integer
+                )",
+            NO_PARAMS,
+        )
+        .unwrap();
+
         Store { conn }
     }
 }
