@@ -1,11 +1,8 @@
-// extern crate dotenv;
-// extern crate regex;
-// extern crate slack;
-
 use dotenv::dotenv;
 use slack::RtmClient;
 
 mod bot;
+mod db;
 mod games;
 
 fn main() {

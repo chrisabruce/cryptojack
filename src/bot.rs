@@ -5,10 +5,13 @@ use slack::{self, Event, RtmClient};
 
 use crate::games::blackjack;
 
+use crate::db;
+
 pub struct CryptoJackBot {
     pub name: String,
     pub active_games: HashMap<String, blackjack::Game>,
     pub completed_games: Vec<blackjack::Game>,
+    store: db::Store,
 }
 
 impl CryptoJackBot {
@@ -20,6 +23,7 @@ impl CryptoJackBot {
             name: name.to_string(),
             active_games: HashMap::new(), //TODO: Persist
             completed_games: Vec::new(),  //TODO: Persist
+            store: db::Store::new("games.db"),
         }
     }
 
