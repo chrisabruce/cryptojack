@@ -1,7 +1,7 @@
 use rusqlite::{Connection, NO_PARAMS};
 
 pub struct Store {
-    conn: rusqlite::Connection,
+    pub conn: rusqlite::Connection,
 }
 
 impl Store {

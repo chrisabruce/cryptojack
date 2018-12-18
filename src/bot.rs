@@ -11,7 +11,7 @@ pub struct CryptoJackBot {
     pub name: String,
     pub active_games: HashMap<String, blackjack::Game>,
     pub completed_games: Vec<blackjack::Game>,
-    store: db::Store,
+    pub store: db::Store,
 }
 
 impl CryptoJackBot {

@@ -1,9 +1,10 @@
 use dotenv::dotenv;
 use slack::RtmClient;
 
-mod bot;
-mod db;
-mod games;
+pub mod accounts;
+pub mod bot;
+pub mod db;
+pub mod games;
 
 fn main() {
     dotenv().ok();
