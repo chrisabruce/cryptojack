@@ -10,6 +10,7 @@ rand = "0.6.0"
 regex = "1"
 slack = "0.22.0"
 separator = "0.3.1"
+helium = { git = "https://github.com/chrisabruce/helium-rs" }
 
 [dependencies.rusqlite]
 version = "0.15.0"

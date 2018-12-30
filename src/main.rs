@@ -1,5 +1,6 @@
 use dotenv::dotenv;
 use slack::RtmClient;
+use helium;
 
 pub mod accounts;
 pub mod bot;
